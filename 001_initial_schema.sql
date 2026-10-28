@@ -1,6 +1,5 @@
 -- TEND schema for Supabase. Apply in the Supabase SQL editor or with the CLI.
 -- Public browser clients use only the anon/publishable key; access is enforced by RLS.
-
 create extension if not exists pgcrypto;
 create schema if not exists private;
 revoke all on schema private from public, anon;
