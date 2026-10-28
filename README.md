@@ -25,17 +25,22 @@ npm run dev
 
 오너 계정은 Discord 사용자명만으로 확인하지 않습니다. 실제 Discord 숫자 사용자 ID를 확인한 후 Supabase Edge Function 환경 변수 `TEND_OWNER_DISCORD_ID`에 설정해야 합니다. Supabase CLI로 `supabase functions deploy owner-bootstrap` 및 `supabase functions deploy owner-admin`을 실행하고, `supabase secrets set TEND_OWNER_DISCORD_ID=실제_숫자_ID`로 설정하세요. Supabase의 `SUPABASE_URL` 및 `SUPABASE_SERVICE_ROLE_KEY`는 함수 실행 환경에서만 사용해야 하며 저장소에 커밋하지 마세요.
 
-## 3. GitHub Pages 배포
+## 3. GitHub Pages 배포 (필수 설정)
 
-1. 이 폴더의 내용을 GitHub 저장소 루트에 업로드합니다.
-2. 저장소 Settings → Secrets and variables → Actions → Variables에서 다음 변수를 추가합니다.
+**`src/main.tsx` 404는 원본 `index.html`이 그대로 게시되고 있다는 뜻입니다.** 브라우저는 TSX 파일을 직접 실행할 수 없습니다. GitHub Actions가 Vite로 빌드한 `dist/` 폴더를 배포해야 합니다.
+
+1. ZIP 안의 `TEND-GitHub-Pages` 폴더 안에 있는 파일과 숨김 폴더 `.github`를 저장소 최상위에 업로드합니다. 저장소에 `TEND-GitHub-Pages/TEND-GitHub-Pages/`처럼 폴더가 중첩되면 안 됩니다.
+2. 저장소에서 **Settings → Pages → Build and deployment → Source → GitHub Actions**를 선택합니다. **Deploy from a branch / main / root를 사용하면 안 됩니다.**
+3. **Settings → Secrets and variables → Actions → Variables**에서 다음 Repository variables를 추가합니다.
    - `VITE_SUPABASE_URL`: Supabase 프로젝트 URL
    - `VITE_SUPABASE_ANON_KEY`: Supabase publishable/anon key
-3. `main` 브랜치에 push합니다. `.github/workflows/deploy.yml`이 빌드 후 GitHub Pages로 배포합니다.
-4. Settings → Pages에서 Source가 GitHub Actions인지 확인합니다.
-5. GitHub Pages 주소를 Supabase Auth의 허용 URL 및 Discord OAuth 설정에 추가합니다.
+4. 변경 사항을 기본 브랜치에 push합니다. `.github/workflows/deploy.yml`은 push 시 실행되도록 구성되어 있습니다. 또는 **Actions → Deploy TEND to GitHub Pages → Run workflow**로 수동 실행합니다.
+5. **Actions** 탭에서 `Deploy TEND to GitHub Pages` 작업이 초록색 체크로 성공했는지 확인합니다. 실패하면 해당 실행을 열고 첫 번째 오류를 확인합니다.
+6. **Settings → Pages**에서 표시되는 배포 주소를 열어 확인합니다. `src/main.tsx`가 계속 요청되면 Actions가 실제로 성공했는지와 Pages Source가 GitHub Actions인지 다시 확인한 뒤 강력 새로고침합니다.
 
-프로젝트 사이트(`https://사용자.github.io/저장소명/`) 기준으로 빌드하도록 워크플로가 저장소 이름을 `VITE_BASE_PATH`에 지정합니다. 커스텀 도메인을 사용할 경우 워크플로의 `VITE_BASE_PATH`를 `/`로 바꾸고 `vite.config.ts`에서 기본 경로도 맞추세요.
+워크플로는 `npm run build`를 실행하고 `dist/`만 배포합니다. 원본 `index.html`에 있는 `/src/main.tsx`는 개발용 진입점이며, 빌드가 완료되면 Vite가 이를 번들 파일 경로로 바꿉니다.
+
+GitHub Pages 주소를 Supabase Auth의 허용 URL 및 Discord OAuth Redirect URL에도 등록해야 로그인할 수 있습니다.
 
 ## 4. 빌드 및 점검
 
