@@ -3,7 +3,6 @@
 GitHub Pages에서 호스팅하는 React/Vite 정적 사이트입니다. 로그인, 사용자 권한, 채팅 기록과 서비스 데이터는 Supabase를 사용합니다. Discord 서버에 실제 조치를 수행하는 기능은 별도 Discord 봇이 Supabase와 연동되어 있어야 작동합니다.
 
 ## 1. 로컬 실행
-
 필요 환경: Node.js 22 이상, npm
 
 ```bash
